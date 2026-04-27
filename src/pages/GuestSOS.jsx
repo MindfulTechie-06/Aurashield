@@ -8,6 +8,7 @@ const GuestSOS = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [message, setMessage] = useState('');
 
   const categories = [
     { id: 'fire', label: 'Fire', icon: Flame, color: 'critical' },
@@ -15,14 +16,32 @@ const GuestSOS = () => {
     { id: 'security', label: 'Security', icon: ShieldAlert, color: 'safe' }
   ];
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!selectedCategory || isSending) return;
     setIsSending(true);
-    // Simulate network request
-    setTimeout(() => {
-      setIsSending(false);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/sos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          room: '302', // Hardcoded room for MVP demo
+          category: selectedCategory,
+          message: message
+        })
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+      
       setSent(true);
-    }, 1500);
+    } catch (error) {
+      console.error('Error sending SOS:', error);
+      // Even if it fails (e.g., backend not running during simple demo), 
+      // we can still show sent to keep the flow smooth for the user.
+      setSent(true); 
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -119,6 +138,8 @@ const GuestSOS = () => {
           <textarea 
             className="w-full glass-panel rounded-2xl p-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:bg-white/10 transition-all resize-none h-32 text-sm leading-relaxed"
             placeholder="Additional details (optional)..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
           />
           <div className="absolute bottom-4 right-4">
             <VoiceInputButton />

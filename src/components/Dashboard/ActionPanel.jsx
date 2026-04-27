@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Megaphone, CheckCircle, Radio, AlertTriangle } from 'lucide-react';
+import { Shield, Megaphone, CheckCircle, Radio, AlertTriangle, Sparkles } from 'lucide-react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const ActionButton = ({ label, icon: Icon, color, onClick, disabled }) => {
   const [isPressed, setIsPressed] = useState(false);
@@ -73,7 +75,26 @@ const ActionPanel = ({ selectedAlert }) => {
                 <AlertTriangle className={`w-5 h-5 ${selectedAlert.type === 'critical' ? 'text-critical' : 'text-warning'}`} />
                 <span>{selectedAlert.category} - {selectedAlert.room}</span>
               </div>
-              <p className="text-sm text-white/60 line-clamp-2">{selectedAlert.message}</p>
+              <p className="text-sm text-white/60 line-clamp-2 italic mb-2">
+                "{selectedAlert.englishTranslation || selectedAlert.originalMessage || selectedAlert.message}"
+              </p>
+              
+              {selectedAlert.recommendedActions && selectedAlert.recommendedActions.length > 0 && (
+                <div className="mt-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+                  <div className="flex items-center space-x-2 mb-2 text-xs font-bold text-white/80 uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                    <span>AI Recommended Actions</span>
+                  </div>
+                  <ul className="space-y-1">
+                    {selectedAlert.recommendedActions.map((action, idx) => (
+                      <li key={idx} className="text-xs text-white/70 flex items-start space-x-2">
+                        <span className="text-blue-400 mt-0.5">•</span>
+                        <span>{action}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </motion.div>
           ) : (
             <motion.div
@@ -97,6 +118,11 @@ const ActionPanel = ({ selectedAlert }) => {
           icon={Shield} 
           color="safe" 
           disabled={!selectedAlert}
+          onClick={() => {
+            if (selectedAlert?.id && !db.isMock) {
+              updateDoc(doc(db, 'alerts', selectedAlert.id), { status: 'in_progress' });
+            }
+          }}
         />
         <ActionButton 
           label="Trigger Evacuation" 
@@ -109,6 +135,11 @@ const ActionPanel = ({ selectedAlert }) => {
           icon={CheckCircle} 
           color="warning" 
           disabled={!selectedAlert}
+          onClick={() => {
+            if (selectedAlert?.id && !db.isMock) {
+              updateDoc(doc(db, 'alerts', selectedAlert.id), { status: 'resolved', type: 'safe' });
+            }
+          }}
         />
       </div>
 

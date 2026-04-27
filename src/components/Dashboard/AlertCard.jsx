@@ -83,7 +83,7 @@ const AlertCard = ({ alert, isSelected, onClick }) => {
       </div>
       
       <p className="text-white/60 text-xs leading-relaxed mt-2 group-hover:text-white/80 transition-colors">
-        {alert.message}
+        {alert.englishTranslation || alert.originalMessage || alert.message}
       </p>
     </motion.div>
   );

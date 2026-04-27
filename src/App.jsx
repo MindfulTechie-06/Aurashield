@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from './firebase';
 import Home from './pages/Home';
 import GuestDashboard from './pages/GuestDashboard';
 import GuestSOS from './pages/GuestSOS';
@@ -7,24 +9,54 @@ import StaffDashboard from './pages/StaffDashboard';
 import { mockAlerts as initialAlerts } from './mockData';
 
 function App() {
-  const [alerts, setAlerts] = useState(initialAlerts);
+  const [alerts, setAlerts] = useState([]);
   const [selectedAlertId, setSelectedAlertId] = useState(null);
 
-  // Time ago logic updater
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAlerts(prev => [...prev]);
-    }, 60000);
-    return () => clearInterval(interval);
+    if (db.isMock) {
+      console.log('Using Mock Data for Alerts');
+      setAlerts(initialAlerts);
+      
+      const interval = setInterval(() => {
+        setAlerts(prev => [...prev]);
+      }, 60000);
+      return () => clearInterval(interval);
+    } else {
+      const alertsRef = collection(db, 'alerts');
+      const q = query(alertsRef, orderBy('timestamp', 'desc'));
+      
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const fetchedAlerts = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setAlerts(fetchedAlerts);
+      }, (error) => {
+        console.error("Firestore onSnapshot error:", error);
+      });
+
+      return () => unsubscribe();
+    }
   }, []);
 
-  // Sort alerts: CRITICAL first, then warning, then safe, then by ID (newest)
+  // Sort alerts: CRITICAL first, then warning, then safe, then by timestamp/ID
   const sortedAlerts = [...alerts].sort((a, b) => {
     const severityScore = { critical: 3, warning: 2, safe: 1 };
-    if (severityScore[a.type] !== severityScore[b.type]) {
-      return severityScore[b.type] - severityScore[a.type];
+    const scoreA = severityScore[a.type] || 0;
+    const scoreB = severityScore[b.type] || 0;
+    
+    if (scoreA !== scoreB) {
+      return scoreB - scoreA; // descending score
     }
-    return b.id - a.id;
+    // Secondary sort by priorityScore if available
+    if (a.priorityScore !== b.priorityScore) {
+       return (b.priorityScore || 0) - (a.priorityScore || 0);
+    }
+    // Fallback sort by timestamp or id
+    if (a.timestamp && b.timestamp) {
+       return new Date(b.timestamp) - new Date(a.timestamp);
+    }
+    return b.id > a.id ? 1 : -1;
   });
 
   return (
