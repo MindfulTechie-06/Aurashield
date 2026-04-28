@@ -17,7 +17,7 @@ const Dashboard = ({ alerts, selectedAlertId, setSelectedAlertId }) => {
   const selectedAlert = alerts.find(a => a.id === selectedAlertId) || null;
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden text-white flex flex-col">
+    <div className="min-h-screen h-screen bg-background relative overflow-hidden text-white flex flex-col">
       {/* 3D Background */}
       <div className="absolute inset-0 z-0 opacity-40 mix-blend-screen pointer-events-none">
         <BackgroundGrid />
@@ -48,7 +48,7 @@ const Dashboard = ({ alerts, selectedAlertId, setSelectedAlertId }) => {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 p-6 h-[calc(100vh-80px)]">
+      <main className="relative z-10 flex-1 p-4 lg:p-6 lg:h-[calc(100vh-80px)] h-auto overflow-y-auto overflow-x-hidden">
         <DashboardLayout>
           {/* Left Column: Alert Feed */}
           <AlertFeed 

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Activity, ShieldAlert, Send } from 'lucide-react';
 import SOSButton from '../components/Guest/SOSButton';
 import VoiceInputButton from '../components/Guest/VoiceInputButton';
 
 const GuestSOS = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -105,7 +107,7 @@ const GuestSOS = () => {
                 transition={{ delay: 0.5 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = '/guest'}
+                onClick={() => navigate('/guest')}
                 className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white/80 transition-colors"
               >
                 Return to Dashboard

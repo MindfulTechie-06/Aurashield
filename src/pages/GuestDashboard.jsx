@@ -31,7 +31,7 @@ const GuestDashboard = ({ alerts }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-white p-6 relative overflow-hidden flex flex-col items-center">
+    <div className="min-h-screen bg-background text-white p-6 relative overflow-y-auto overflow-x-hidden flex flex-col items-center">
       {/* Background ambient glow based on status */}
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full blur-[150px] pointer-events-none opacity-20 mix-blend-screen
         ${hotelStatus === 'critical' ? 'bg-critical' : (hotelStatus === 'warning' ? 'bg-warning' : 'bg-safe')}`} 
