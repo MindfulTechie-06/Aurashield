@@ -47,7 +47,7 @@ const GuestSOS = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-y-auto overflow-x-hidden">
       {/* Background ambient glow - floating */}
       <motion.div 
         animate={{ 
@@ -75,7 +75,7 @@ const GuestSOS = () => {
             className="absolute inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-2xl"
           >
             <div className="text-center p-8 glass-panel rounded-3xl mx-6 border-safe/30 shadow-[0_0_50px_rgba(34,197,94,0.15)] relative overflow-hidden">
-              <span className="absolute inset-0 bg-safe/5" />
+              <span className="absolute inset-0 bg-safe/5 pointer-events-none" />
               <motion.div 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -108,7 +108,7 @@ const GuestSOS = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/guest')}
-                className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white/80 transition-colors"
+                className="relative z-10 px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white/80 transition-colors"
               >
                 Return to Dashboard
               </motion.button>

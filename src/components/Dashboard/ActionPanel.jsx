@@ -112,7 +112,7 @@ const ActionPanel = ({ selectedAlert }) => {
       </div>
 
       {/* Buttons */}
-      <div className="p-6 space-y-4 flex-1 flex flex-col justify-start">
+      <div className="p-6 space-y-4 flex-1 flex flex-col justify-start overflow-y-auto">
         <ActionButton 
           label="Dispatch Team" 
           icon={Shield} 
